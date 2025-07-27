@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS - Doctor Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            display:flex;
+            flex-direction: column;
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-icon {
+            color: #3498db;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 1rem 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-item:hover {
+            background-color: #34495e;
+        }
+
+        .nav-item.active {
+            background-color: #3498db;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-info {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex-grow: 1;
+        }
+
+        .user-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 400px;
+            margin: 0 2rem;
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            flex: 1;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .notification-icon, .settings-icon {
+            font-size: 1.25rem;
+            color: #555;
+            cursor: pointer;
+        }
+
+        /* Dashboard Content */
+        .dashboard {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .page-title {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .welcome-message {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+
+        .doctor-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-title {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .schedule-section {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .schedule-card {
+            flex: 2;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .schedule-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .schedule-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .schedule-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .date-selector {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .schedule-content {
+            padding: 1rem;
+        }
+
+        .appointment {
+            display: flex;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f1f1;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .appointment:last-child {
+            border-bottom: none;
+        }
+
+        .appointment-time {
+            width: 80px;
+            text-align: center;
+            padding: 0.5rem;
+            background-color: #e8f7ef;
+            border-radius: 4px;
+            font-weight: 500;
+            color: #27ae60;
+        }
+
+        .appointment-details {
+            flex: 1;
+        }
+
+        .patient-name {
+            font-weight: 500;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .appointment-type {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+
+        .patient-list {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .patient-list-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .patient-list-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .view-all {
+            color: #3498db;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .patient-item {
+            display: flex;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f1f1;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .patient-item:last-child {
+            border-bottom: none;
+        }
+
+        .patient-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #e8f7ef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .patient-info {
+            flex: 1;
+        }
+
+        .patient-details {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .status-critical {
+            background-color: #fde9e9;
+            color: #e74c3c;
+        }
+
+        .status-stable {
+            background-color: #e8f7ef;
+            color: #27ae60;
+        }
+
+        .status-recovering {
+            background-color: #fef5e8;
+            color: #f39c12;
+        }
+
+        .recent-activities {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .activity-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .activity-feed {
+            padding: 1rem;
+        }
+
+        .activity-item {
+            display: flex;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f1f1;
+            gap: 1rem;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            background-color: #eaf3fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3498db;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 992px) {
+            .schedule-section {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar-header span, .nav-item span, .user-details {
+                display: none;
+            }
+
+            .doctor-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">H+</div>
+            <span>MedCare HMS</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active">
+                <div class="nav-icon">📊</div>
+                <a href="uploadreport.html" style="text-decoration:none; color:white; "><span>Doctor</span></a>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">📅</div>
+                <a href="Reciptionlist.html" style="text-decoration:none; color:white; "><span>Reception</span></a>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">👨‍👩‍👧‍👦</div>
+                <a href="patient.html" style="text-decoration:none; color:white; "><span>Patients</span></a>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">📋</div>
+                <a href="viewReports" style="text-decoration:none; color:white; "><span>view Reports</span></a>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">💊</div>
+                <a href="admin.html" style="text-decoration:none; color:white; "><span>Admin</span></a>
+                
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">📝</div>
+                <span>Reports</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">⚙️</div>
+                <span>Settings</span>
+            </li>
+        </ul>
+        <div class="user-info">
+            <div class="user-avatar">D</div>
+            <div class="user-details">
+                <div class="user-name">Dr. John Smith</div>
+                <div class="user-role">Cardiology</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <button class="menu-toggle">☰</button>
+            <div class="search-box">
+                <span>🔍</span>
+                <input type="text" placeholder="Search patients...">
+            </div>
+            <div class="header-actions">
+                <div class="notification-icon">🔔</div>
+                <div class="settings-icon">⚙️</div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <h1 class="page-title">Doctor Dashboard</h1>
+            <p class="welcome-message">Welcome back, Dr. John Smith! You have 8 appointments today.</p>
+
+            <div class="doctor-stats">
+                <div class="stat-card">
+                    <div class="stat-title">Today's Appointments</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">4 remaining</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Patients</div>
+                    <div class="stat-value">42</div>
+                    <div class="stat-label">3 new this week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Surgeries</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Scheduled this week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Patient Rating</div>
+                    <div class="stat-value">4.9</div>
+                    <div class="stat-label">Out of 5.0</div>
+                </div>
+            </div>
+
+            <div class="recent-activities">
+                <div class="activity-header">
+                    <h3 class="activity-title">Recent Activities</h3>
+                </div>
+				
+				<!-- Upload Medical Report Form -->
+<!-- 🔽 Inside your recent-activities div, replace this old upload-report div -->
+
+<style>
+    .upload-report-form {
+        max-width: 600px;
+        margin: 30px auto;
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .upload-report-form h3 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+    .upload-report-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .upload-report-form input[type="text"],
+    .upload-report-form input[type="number"],
+    .upload-report-form input[type="date"],
+    .upload-report-form textarea,
+    .upload-report-form select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
+
+    .upload-report-form input[type="file"] {
+        margin-bottom: 15px;
+    }
+
+    .upload-report-form input[type="submit"] {
+        background-color: #3498db;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .upload-report-form input[type="submit"]:hover {
+        background-color: #2980b9;
+    }
+</style>
+
+<div class="upload-report-form">
+    <h3>📝 Upload Medical Report</h3>
+    <form action="uploadReport" method="post" enctype="multipart/form-data">
+        <label>Patient Name:</label>
+        <input type="text" name="patientName" required>
+
+        <label>Age:</label>
+        <input type="number" name="age" required>
+
+        <label>Gender:</label>
+        <select name="gender" required>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <label>Diagnosis:</label>
+        <textarea name="diagnosis" rows="3" required></textarea>
+
+        <label>Prescription:</label>
+        <textarea name="prescription" rows="3" required></textarea>
+
+        <label>Upload Report (PDF/JPG):</label>
+        <input type="file" name="reportFile" accept=".pdf,.jpg,.jpeg,.png" required>
+
+        <label>Date:</label>
+        <input type="date" name="reportDate" required>
+
+        <input type="submit" value="Upload Report">
+    </form>
+</div>
+
+
+				
+				
+				
+                <div class="activity-feed">
+                    <div class="activity-item">
+                        <div class="activity-icon">📝</div>
+                        <div class="activity-content">
+                            <div class="activity-text">You updated medical records for <strong>David Miller</strong></div>
+                            <div class="activity-time">10 minutes ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">💊</div>
+                        <div class="activity-content">
+                            <div class="activity-text">You prescribed medication to <strong>Sarah Williams</strong></div>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">🩺</div>
+                        <div class="activity-content">
+                            <div class="activity-text">You completed checkup for <strong>Jennifer Davis</strong></div>
+                            <div class="activity-time">3 hours ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="schedule-section">
+                <div class="schedule-card">
+                    <div class="schedule-header">
+                        <h3 class="schedule-title">Today's Schedule</h3>
+                        <div class="schedule-date">
+                            <button class="date-selector">< Prev</button>
+                            <span>May 4, 2025</span>
+                            <button class="date-selector">Next ></button>
+                        </div>
+                    </div>
+                    <div class="schedule-content">
+                        <div class="appointment">
+                            <div class="appointment-time">09:00</div>
+                            <div class="appointment-details">
+                                <div class="patient-name">Alice Thompson</div>
+                                <div class="appointment-type">Regular Checkup</div>
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="action-btn">Start</button>
+                                <button class="action-btn">Reschedule</button>
+                            </div>
+                        </div>
+                        <div class="appointment">
+                            <div class="appointment-time">10:30</div>
+                            <div class="appointment-details">
+                                <div class="patient-name">Mark Johnson</div>
+                                <div class="appointment-type">Post-Surgery Followup</div>
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="action-btn">Start</button>
+                                <button class="action-btn">Reschedule</button>
+                            </div>
+                        </div>
+                        <div class="appointment">
+                            <div class="appointment-time">11:45</div>
+                            <div class="appointment-details">
+                                <div class="patient-name">Sarah Williams</div>
+                                <div class="appointment-type">Medication Review</div>
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="action-btn">Start</button>
+                                <button class="action-btn">Reschedule</button>
+                            </div>
+                        </div>
+                        <div class="appointment">
+                            <div class="appointment-time">14:15</div>
+                            <div class="appointment-details">
+                                <div class="patient-name">David Miller</div>
+                                <div class="appointment-type">New Patient Consultation</div>
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="action-btn">Start</button>
+                                <button class="action-btn">Reschedule</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="patient-list">
+                    <div class="patient-list-header">
+                        <h3 class="patient-list-title">Critical Patients</h3>
+                        <a href="#" class="view-all">View All</a>
+                    </div>
+                    <div class="patient-item">
+                        <div class="patient-avatar">JD</div>
+                        <div class="patient-info">
+                            <div class="patient-name">John Doe</div>
+                            <div class="patient-details">Age 65, Heart Surgery</div>
+                        </div>
+                        <span class="status status-critical">Critical</span>
+                    </div>
+                    <div class="patient-item">
+                        <div class="patient-avatar">MW</div>
+                        <div class="patient-info">
+                            <div class="patient-name">Mary Wilson</div>
+                            <div class="patient-details">Age 72, Cardiac Arrest</div>
+                        </div>
+                        <span class="status status-recovering">Recovering</span>
+                    </div>
+                    <div class="patient-item">
+                        <div class="patient-avatar">RJ</div>
+                        <div class="patient-info">
+                            <div class="patient-name">Robert Jackson</div>
+                            <div class="patient-details">Age 58, Heart Failure</div>
+                        </div>
+                        <span class="status status-stable">Stable</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple toggle for sidebar in mobile view
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+        });
+    </script>
+</body>
+</html>

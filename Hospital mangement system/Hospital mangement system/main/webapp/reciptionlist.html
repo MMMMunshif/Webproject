@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS - Patient Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-icon {
+            color: #3498db;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 1rem 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-item:hover {
+            background-color: #34495e;
+        }
+
+        .nav-item.active {
+            background-color: #3498db;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-info {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex-grow: 1;
+        }
+
+        .user-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 400px;
+            margin: 0 2rem;
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            flex: 1;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .notification-icon, .settings-icon {
+            font-size: 1.25rem;
+            color: #555;
+            cursor: pointer;
+        }
+
+        /* Dashboard Content */
+        .dashboard {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .page-title {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #3498db;
+        }
+
+        .action-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .action-description {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .content-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-column {
+            flex: 1;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .view-all {
+            color: #3498db;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .appointment-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .appointment-item:last-child {
+            border-bottom: none;
+        }
+
+        .appointment-date {
+            width: 60px;
+            height: 60px;
+            background-color: #e8f7ef;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .date-day {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .date-month {
+            font-size: 0.8rem;
+            color: #27ae60;
+        }
+
+        .appointment-details {
+            flex: 1;
+        }
+
+        .doctor-name {
+            font-weight: 500;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .appointment-info {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: #555;
+            border: 1px solid #ddd;
+        }
+
+        .prescription-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .prescription-item:last-child {
+            border-bottom: none;
+        }
+
+        .med-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #eaf3fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+
+        .med-details {
+            flex: 1;
+        }
+
+        .med-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .med-info {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .health-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .stat-reading {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .stat-unit {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .billing-item {
+            display: flex;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f1f1;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .billing-item:last-child {
+            border-bottom: none;
+        }
+
+        .billing-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .billing-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .billing-date {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .billing-amount {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-paid {
+            background-color: #e8f7ef;
+            color: #27ae60;
+        }
+
+        .status-pending {
+            background-color: #fef5e8;
+            color: #f39c12;
+        }
+
+        @media (max-width: 992px) {
+            .content-row {
+                flex-direction: column;
+            }
+            
+            .health-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar-header span, .nav-item span, .user-details {
+                display: none;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">H+</div>
+            <span>MedCare HMS</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active">
+                <div class="nav-icon">📊</div>
+                 <a href="rec.html" style="text-decoration:none; color:white;"><span>Receptionist</span></a>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">📅</div>
+                <span>Appointments</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">💊</div>
+                <span>Prescriptions</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">📋</div>
+                <span>Medical Records</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">🩸</div>
+                <span>Lab Results</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">💰</div>
+                <span>Billing</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">⚙️</div>
+                <span>Settings</span>
+            </li>
+        </ul>
+        <div class="user-info">
+            <div class="user-avatar">A</div>
+            <div class="user-details">
+                <div class="user-name">Alice Thompson</div>
+                <div class="user-role">Patient</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <button class="menu-toggle">☰</button>
+            <div class="search-box">
+                <span>🔍</span>
+                <input type="text" placeholder="Search...">
+            </div>
+            <div class="header-actions">
+                <div class="notification-icon">🔔</div>
+                <div class="settings-icon">⚙️</div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <h1 class="page-title">Patient Dashboard</h1>
+
+            <div class="quick-actions">
+                <div class="action-card">
+                    <div class="action-icon">📅</div>
+                    <h3 class="action-title">Schedule Appointment</h3>
+                    <p class="action-description">Book a new appointment with your doctor</p>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon">💊</div>
+                    <h3 class="action-title">Refill Prescription</h3>
+                    <p class="action-description">Request refills for your medications</p>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon">💬</div>
+                    <h3 class="action-title">Message Doctor</h3>
+                    <p class="action-description">Communicate with your healthcare provider</p>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon">📱</div>
+                    <h3 class="action-title">Telemedicine</h3>
+                    <p class="action-description">Start a virtual consultation</p>
+                </div>
+            </div>
+
+            <div class="content-row">
+                <div class="content-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Upcoming Appointments</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="appointment-item">
+                                <div class="appointment-date">
+                                    <div class="date-day">12</div>
+                                    <div class="date-month">May</div>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="doctor-name">Dr. John Smith</div>
+                                    <div class="appointment-info">Cardiology • 10:00 AM</div>
+                                    <div class="appointment-actions">
+                                        <button class="btn btn-primary">Confirm</button>
+                                        <button class="btn btn-secondary">Reschedule</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="appointment-item">
+                                <div class="appointment-date">
+                                    <div class="date-day">18</div>
+                                    <div class="date-month">May</div>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="doctor-name">Dr. Sarah Johnson</div>
+                                    <div class="appointment-info">General Check-up • 2:30 PM</div>
+                                    <div class="appointment-actions">
+                                        <button class="btn btn-primary">Confirm</button>
+                                        <button class="btn btn-secondary">Reschedule</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="appointment-item">
+                                <div class="appointment-date">
+                                    <div class="date-day">25</div>
+                                    <div class="date-month">May</div>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="doctor-name">Dr. Michael Chen</div>
+                                    <div class="appointment-info">Dermatology • 11:15 AM</div>
+                                    <div class="appointment-actions">
+                                        <button class="btn btn-primary">Confirm</button>
+                                        <button class="btn btn-secondary">Reschedule</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Current Prescriptions</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="prescription-item">
+                                <div class="med-icon">💊</div>
+                                <div class="med-details">
+                                    <div class="med-name">Lisinopril 10mg</div>
+                                    <div class="med-info">1 tablet daily • Refills: 3 remaining</div>
+                                </div>
+                            </div>
+                            <div class="prescription-item">
+                                <div class="med-icon">💊</div>
+                                <div class="med-details">
+                                    <div class="med-name">Simvastatin 20mg</div>
+                                    <div class="med-info">1 tablet at bedtime • Refills: 5 remaining</div>
+                                </div>
+                            </div>
+                            <div class="prescription-item">
+                                <div class="med-icon">💊</div>
+                                <div class="med-details">
+                                    <div class="med-name">Metformin 500mg</div>
+                                    <div class="med-info">1 tablet twice daily • Refills: 2 remaining</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Health Metrics</h3>
+                            <a href="#" class="view-all">View Details</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="health-stats">
+                                <div class="stat-item">
+                                    <div class="stat-header">
+                                        <div class="stat-name">Blood Pressure</div>
+                                    </div>
+                                    <div class="stat-reading">120/80</div>
+                                    <div class="stat-unit">mmHg</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-header">
+                                        <div class="stat-name">Heart Rate</div>
+                                    </div>
+                                    <div class="stat-reading">72</div>
+                                    <div class="stat-unit">bpm</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-header">
+                                        <div class="stat-name">Blood Glucose</div>
+                                    </div>
+                                    <div class="stat-reading">98</div>
+                                    <div class="stat-unit">mg/dL</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-header">
+                                        <div class="stat-name">Weight</div>
+                                    </div>
+                                    <div class="stat-reading">68</div>
+                                    <div class="stat-unit">kg</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Billing</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="billing-item">
+                                <div class="billing-details">
+                                    <div class="billing-title">Office Visit - Cardiology</div>
+                                    <div class="billing-date">April 15, 2025</div>
+                                </div>
+                                <div class="billing-amount">$125.00</div>
+                                <div class="status-pill status-paid">Paid</div>
+                            </div>
+                            <div class="billing-item">
+                                <div class="billing-details">
+                                    <div class="billing-title">Blood Work</div>
+                                    <div class="billing-date">April 15, 2025</div>
+                                </div>
+                                <div class="billing-amount">$75.50</div>
+                                <div class="status-pill status-paid">Paid</div>
+                            </div>
+                            <div class="billing-item">
+                                <div class="billing-details">
+                                    <div class="billing-title">MRI Scan</div>
+                                    <div class="billing-date">April 28, 2025</div>
+                                </div>
+                                <div class="billing-amount">$350.00</div>
+                                <div class="status-pill status-pending">Pending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-row">
+                <div class="content-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Lab Results</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="appointment-item">
+                                <div class="appointment-date">
+                                    <div class="date-day">30</div>
+                                    <div class="date-month">Apr</div>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="doctor-name">Complete Blood Count (CBC)</div>
+                                    <div class="appointment-info">Results available • Dr. Johnson</div>
+                                    <div class="appointment-actions">
+                                        <button class="btn btn-primary">View Results</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="appointment-item">
+                                <div class="appointment-date">
+                                    <div class="date-day">22</div>
+                                    <div class="date-month">Apr</div>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="doctor-name">Lipid Panel</div>
+                                    <div class="appointment-info">Results available • Dr. Smith</div>
+                                    <div class="appointment-actions">
+                                        <button class="btn btn-primary">View Results</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Health Reminders</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="prescription-item">
+                                <div class="med-icon">💉</div>
+                                <div class="med-details">
+                                    <div class="med-name">Flu Vaccination Due</div>
+                                    <div class="med-info">Recommended by May 31, 2025</div>
+                                </div>
+                            </div>
+                            <div class="prescription-item">
+                                <div class="med-icon">🦷</div>
+                                <div class="med-details">
+                                    <div class="med-name">Dental Check-up</div>
+                                    <div class="med-info">Due in 2 weeks</div>
+                                </div>
+                            </div>
+                            <div class="prescription-item">
+                                <div class="med-icon">👁️</div>
+                                <div class="med-details">
+                                    <div class="med-name">Eye Examination</div>
+                                    <div class="med-info">Due in 1 month</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar on mobile
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+        });
+
+        // For demonstration purposes only - Add functionality to buttons
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('This feature would be functional in a production environment.');
+            });
+        });
+
+        // Quick action cards
+        const actionCards = document.querySelectorAll('.action-card');
+        actionCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const action = this.querySelector('.action-title').textContent;
+                alert(`You selected: ${action}`);
+            });
+        });
+    </script>
+</body>
+</html>

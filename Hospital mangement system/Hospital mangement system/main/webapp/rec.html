@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+  <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-icon {
+            color: #3498db;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 1rem 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-item:hover {
+            background-color: #34495e;
+        }
+
+        .nav-item.active {
+            background-color: #3498db;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-info {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex-grow: 1;
+        }
+
+        .user-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 400px;
+            margin: 0 2rem;
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            flex: 1;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .notification-icon, .settings-icon {
+            font-size: 1.25rem;
+            color: #555;
+            cursor: pointer;
+        }
+
+        /* Dashboard Content */
+        .dashboard {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .page-title {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-title {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            color: #27ae60;
+            margin-top: 0.5rem;
+        }
+
+        .negative-change {
+            color: #e74c3c;
+        }
+
+        .tables-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .table-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .view-all {
+            color: #3498db;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem 1.5rem;
+            text-align: left;
+        }
+
+        th {
+            font-weight: 500;
+            color: #7f8c8d;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .status-confirmed {
+            background-color: #e8f7ef;
+            color: #27ae60;
+        }
+
+        .status-pending {
+            background-color: #fef5e8;
+            color: #f39c12;
+        }
+
+        .status-cancelled {
+            background-color: #fde9e9;
+            color: #e74c3c;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+
+        /* Quick Access Panel */
+        .quick-access {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quick-access h3 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-card {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .action-card:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 1.75rem;
+            color: #3498db;
+        }
+
+        .action-text {
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        /* Form Styles */
+        .appointment-form {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .form-title {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            font-size: 1.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar-header span, .nav-item span, .user-details {
+                display: none;
+            }
+
+            .tables-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+
+</head>
+<body>
+  
+  <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">H+</div>
+            <span>MedCare HMS</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active">
+                <div class="nav-icon">📊</div>
+                <span>Dashboard</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">📅</div>
+                <span>Appointments</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">👨‍⚕️</div>
+              <a href="patient.html" style="text-decoration:none; color:white;"><span>Patients</span></a>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">🏥</div>
+               <a href="doctor.html" style="text-decoration:none; color:white;"><span>Doctors</span></a>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">🛏️</div>
+                <span>Rooms</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">💰</div>
+                <span>Billing</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">📝</div>
+                <span>Reports</span>
+            </li>
+            <li class="nav-item">
+                <div class="nav-icon">⚙️</div>
+                <span>Settings</span>
+            </li>
+        </ul>
+        <div class="user-info">
+            <div class="user-avatar">R</div>
+            <div class="user-details">
+                <div class="user-name">Rebecca Taylor</div>
+                <div class="user-role">Receptionist</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <button class="menu-toggle">☰</button>
+            <div class="search-box">
+                <span>🔍</span>
+                <input type="text" placeholder="Search patient, doctor, or appointment...">
+            </div>
+            <div class="header-actions">
+                <div class="notification-icon">🔔</div>
+                <div class="settings-icon">⚙️</div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <h1 class="page-title">Receptionist Dashboard</h1>
+
+            <div class="quick-access">
+                <h3>Quick Actions</h3>
+                <div class="action-buttons">
+                    <div class="action-card">
+                        <div class="action-icon">📋</div>
+								<div class="action-text"><a href="form.html" style="text-decoration:none; color:#555555;">New Patient Registration</a></div> 					   </div>
+                    <div class="action-card">
+                        <div class="action-icon">📅</div>
+                        <div class="action-text">Schedule Appointment</div>
+                    </div>
+                    <div class="action-card">
+                        <div class="action-icon">💰</div>
+                        <div class="action-text">Process Payment</div>
+                    </div>
+                    <div class="action-card">
+                        <div class="action-icon">🛏️</div>
+                        <div class="action-text">Check Room Availability</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-title">Today's Appointments</div>
+                    <div class="stat-value">42</div>
+                    <div class="stat-change">+5 from yesterday</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Patients Checked In</div>
+                    <div class="stat-value">18</div>
+                    <div class="stat-change">43% of scheduled</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Waiting Time</div>
+                    <div class="stat-value">15 min</div>
+                    <div class="stat-change negative-change">+3 min from average</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Available Doctors</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change">75% on duty</div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <h3 class="table-title">Today's Appointments</h3>
+                    
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>09:00 AM</td>
+                            <td>John Doe</td>
+                            <td>Dr. Emily Johnson</td>
+                            <td>Pediatrics</td>
+                            <td><span class="status status-confirmed">Checked In</span></td>
+                           
+                        </tr>
+                        <tr>
+                            <td>09:30 AM</td>
+                            <td>Susan Smith</td>
+                            <td>Dr. Michael Brown</td>
+                            <td>Neurology</td>
+                            <td><span class="status status-confirmed">Checked In</span></td>
+                           
+                        </tr>
+                        <tr>
+                            <td>10:00 AM</td>
+                            <td>Robert Johnson</td>
+                            <td>Dr. John Smith</td>
+                            <td>Cardiology</td>
+                            <td><span class="status status-pending">Waiting</span></td>
+                          
+                        </tr>
+                        <tr>
+                            <td>10:30 AM</td>
+                            <td>Emma Wilson</td>
+                            <td>Dr. Sarah Wilson</td>
+                            <td>Dermatology</td>
+                            <td><span class="status status-pending">Scheduled</span></td>
+                            
+                        </tr>
+                        <tr>
+                            <td>11:00 AM</td>
+                            <td>Michael Davis</td>
+                            <td>Dr. Robert Davis</td>
+                            <td>Oncology</td>
+                            <td><span class="status status-cancelled">Cancelled</span></td>
+                           
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+           
+                  
+    <script>
+        // Toggle sidebar on mobile
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+        });
+
+        // Simple form handling
+        document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Appointment scheduled successfully!');
+            this.reset();
+        });
+
+        // Department and doctor dependency
+        document.getElementById('department').addEventListener('change', function() {
+            // In a real app, this would filter doctors based on department
+            console.log('Department changed to: ' + this.value);
+        });
+    </script>
+  
+  
+</body>
+</html>
